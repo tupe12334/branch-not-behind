@@ -35,6 +35,29 @@ Register it as a hook in your AI tool, passing the target branches as args:
 branch-not-behind main develop
 ```
 
+### Example: Claude Code
+
+Add a `PreToolUse` hook in `.claude/settings.json` that runs the binary on every
+`Bash` command, passing the target branches as args:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "branch-not-behind main develop"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
 Now any agent-issued `git commit` is gated on the current branch being up to date with
 `origin/main` **and** `origin/develop`. Example block output (Claude Code format):
 
