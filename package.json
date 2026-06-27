@@ -1,0 +1,52 @@
+{
+  "name": "branch-not-behind",
+  "version": "0.1.0",
+  "description": "polyhook hook that blocks AI-agent commits when the current branch is behind target branches",
+  "license": "MIT",
+  "author": "tupe12334",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "branch-not-behind": "dist/cli.cjs"
+  },
+  "files": [
+    "dist/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "polyhook",
+    "hooks",
+    "git",
+    "commit",
+    "branch",
+    "behind",
+    "ai",
+    "coding-agent"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@polyhook/sdk": "^0.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^4.0.0",
+    "vitest": "^2.0.0"
+  }
+}
