@@ -12,7 +12,11 @@ export interface BehindResult {
   error?: string;
 }
 
-/** Run git, returning trimmed stdout. Throws on non-zero exit. */
+/**
+ * Run git, returning trimmed stdout. Throws on non-zero exit.
+ * @param args Arguments to pass to the `git` executable.
+ * @returns The trimmed stdout of the command.
+ */
 function git(args: string[]): string {
   return execFileSync("git", args, {
     encoding: "utf8",
@@ -20,7 +24,10 @@ function git(args: string[]): string {
   }).trim();
 }
 
-/** Current branch name, or null when detached / not a repo. */
+/**
+ * Current branch name, or null when detached / not a repo.
+ * @returns The branch name, or `null` when detached or outside a repo.
+ */
 export function currentBranch(): string | null {
   try {
     const name = git(["rev-parse", "--abbrev-ref", "HEAD"]);
@@ -36,18 +43,33 @@ export function currentBranch(): string | null {
  * between `git` and `commit` (e.g. `git -C dir commit`), and avoids
  * false positives like `git committer`, `git commit-tree`, or prose such as
  * `echo git then commit`.
+ * @param command The shell command string to test.
+ * @returns `true` when the command runs `git commit`.
  */
 export function isGitCommitCommand(command: string): boolean {
+  // The flag group is bounded to short, single-token flags (`-C dir`,
+  // `--no-verify`) on a hook-supplied command string, not untrusted input of
+  // unbounded length, so the repeated-`\s+` overlap this rule flags is not an
+  // exploitable ReDoS vector here.
+  // eslint-disable-next-line security/detect-unsafe-regex
   return /\bgit\s+(?:-C\s+\S+\s+|-{1,2}\S+\s+)*commit\b(?![\w-])/.test(command);
 }
 
-/** Number of commits HEAD is behind `ref` (commits in ref not in HEAD). */
+/**
+ * Number of commits HEAD is behind `ref` (commits in ref not in HEAD).
+ * @param ref The ref to compare HEAD against.
+ * @returns The commit count.
+ */
 function behindBy(ref: string): number {
   const out = git(["rev-list", "--count", `HEAD..${ref}`]);
   return Number.parseInt(out, 10) || 0;
 }
 
-/** True when a ref resolves locally. */
+/**
+ * True when a ref resolves locally.
+ * @param ref The ref to check.
+ * @returns Whether the ref exists.
+ */
 function refExists(ref: string): boolean {
   try {
     git(["rev-parse", "--verify", "--quiet", `${ref}^{commit}`]);
@@ -62,6 +84,9 @@ function refExists(ref: string): boolean {
  * `origin/<branch>` first; on fetch failure falls back to the local ref and
  * marks the result `stale`. Targets equal to the current branch are skipped.
  * Never throws — unresolved targets carry an `error` and behind 0.
+ * @param targets Branch names to compare HEAD against.
+ * @param current The current branch name; targets matching it are skipped.
+ * @returns One result per target (skipping targets equal to `current`).
  */
 export function behindCounts(
   targets: string[],

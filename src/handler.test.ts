@@ -11,7 +11,7 @@ function event(partial: Partial<HookEvent>): HookEvent {
     sessionId: "s",
     caller: "claude-code",
     ...partial,
-  } as HookEvent;
+  };
 }
 
 const behind = (n: number): (() => BehindResult[]) => () =>
