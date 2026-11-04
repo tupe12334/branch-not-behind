@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+export { isGitCommitCommand } from "./git-commit-command.js";
 
 /** Result of comparing HEAD against a single target branch. */
 export interface BehindResult {
@@ -35,24 +36,6 @@ export function currentBranch(): string | null {
   } catch {
     return null;
   }
-}
-
-/**
- * True when the shell command runs `git commit`. Matches `git commit ...`
- * even when prefixed (e.g. `cd x && git commit`), tolerates global flags
- * between `git` and `commit` (e.g. `git -C dir commit`), and avoids
- * false positives like `git committer`, `git commit-tree`, or prose such as
- * `echo git then commit`.
- * @param command The shell command string to test.
- * @returns `true` when the command runs `git commit`.
- */
-export function isGitCommitCommand(command: string): boolean {
-  // The flag group is bounded to short, single-token flags (`-C dir`,
-  // `--no-verify`) on a hook-supplied command string, not untrusted input of
-  // unbounded length, so the repeated-`\s+` overlap this rule flags is not an
-  // exploitable ReDoS vector here.
-  // eslint-disable-next-line security/detect-unsafe-regex
-  return /\bgit\s+(?:-C\s+\S+\s+|-{1,2}\S+\s+)*commit\b(?![\w-])/.test(command);
 }
 
 /**
