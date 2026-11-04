@@ -87,3 +87,7 @@ npm run typecheck
 npm test
 npm run build
 ```
+
+## Related projects
+
+- [moadim](https://moadim.io/) — loop engineering: build, schedule & run agent loops.
